@@ -13,15 +13,9 @@ Figure. 1 The framework of GTpMHC. (A) Feature Extraction and Graph Construction
 
 ## Install
 
-Use Python 3.8–3.11; Python 3.10 is a practical choice for the pinned original deployment dependencies:
-
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+conda env create -f GTpMHC.yml
 ```
-
-An existing environment that runs the original webserver can also be used. For GPU deployment, install a PyTorch build compatible with your CUDA environment. Extra `torch-scatter`, `torch-sparse`, `torch-cluster` and `torch-spline-conv` packages are not required by this edge-index inference path.
 
 ## Local weights and model settings
 
