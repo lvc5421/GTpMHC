@@ -1,0 +1,26 @@
+name: GTpMHC
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+  - pyg
+dependencies:
+  - python=3.8.20
+  - pytorch=2.1.0
+  - torchvision=0.16.0
+  - torchaudio=2.1.0
+  - pytorch-cuda=11.8
+  - pyg::pyg=2.5.2
+  - numpy=1.24.4
+  - tqdm=4.67.1
+  - pip=24.3.1
+  - pip:
+    - --find-links https://data.pyg.org/whl/torch-2.1.0+cu118.html
+    - torch-scatter==2.1.2+pt21cu118
+    - torch-sparse==0.6.18+pt21cu118
+    - torch-cluster==1.6.3+pt21cu118
+    - torch-spline-conv==1.2.2+pt21cu118
+    - fair-esm==2.0.0
+    - biopython==1.83
+    - pandas==2.0.3
