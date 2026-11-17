@@ -6,17 +6,8 @@ Here, we present GTpMHC, a graph–Transformer framework trained and evaluated s
 
  The GTpMHC online prediction webserver and experimental datasets are available at http://bliulab.net/GTpMHC/document
 
-## Files
+<img width="865" height="548" alt="image" src="https://github.com/user-attachments/assets/d8e78e02-6dd2-4b9e-93da-dc317d6aabd5" />
 
-| File | Purpose |
-|---|---|
-| `gtpmhc.py` | Standalone `GTpMHC` model and audited checkpoint loader; no project-specific parent model |
-| `features.py` | Raw33/ESM features, contact graph, HLA numbering and bounded in-memory caches |
-| `app.py` | Configuration, input validation, prediction engine, HTTP server and CLI |
-| `index.html` | Complete web interface with inline CSS and JavaScript; no CDN |
-| `config.json` | Class I / II checkpoint paths and inference architecture parameters |
-
-Training, MAE reconstruction, auxiliary prediction heads, SupCon, offline preprocessing, precomputed feature dictionaries, dataset loaders and unused inherited implementations are omitted. The original peptide-first model order is retained. This release does not use the separate HLA-first model variant.
 
 ## Install
 
