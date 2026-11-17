@@ -1,0 +1,33 @@
+{
+  "device": "auto",
+  "esm_device": "cpu",
+  "esm_checkpoint": "weights/esm2_t33_650M_UR50D.pt",
+  "esm_contact_checkpoint": "weights/esm2_t33_650M_UR50D-contact-regression.pt",
+  "threshold": 0.5,
+  "max_protein_length": 2000,
+  "max_cached_sequences": 256,
+  "models": {
+    "I": {
+      "checkpoint": "weights/gtpmhc_i.pth",
+      "kwargs": {
+        "hidden_channels": 128,
+        "K": [5, 10],
+        "heads": 4,
+        "max_pep_len": 25,
+        "transformer_layers": 1,
+        "max_hla_position": 256
+      }
+    },
+    "II": {
+      "checkpoint": "weights/gtpmhc_ii.pth",
+      "kwargs": {
+        "hidden_channels": 128,
+        "K": [5, 10],
+        "heads": 4,
+        "max_pep_len": 25,
+        "transformer_layers": 1,
+        "max_hla_position": 256
+      }
+    }
+  }
+}

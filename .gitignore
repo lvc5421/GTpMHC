@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.env
+weights/
+*.pt
+*.pth
+*.ckpt
+*.log
+*.zip
+.DS_Store
+Thumbs.db
