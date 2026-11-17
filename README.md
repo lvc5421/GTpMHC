@@ -51,6 +51,7 @@ curl -fL --retry 3 \
 
 ```bash
 python app.py predict --mhc-class I \
+  --config config.json \
   --protein-fasta examples/MHC_I.fasta \
   --peptide AAADIVNFL --threshold 0.5
 ```
@@ -59,6 +60,7 @@ python app.py predict --mhc-class I \
 
 ```bash
 python app.py predict --mhc-class II \
+  --config config.json \
   --protein-fasta examples/MHC_II.fasta \
   --peptide DAGQIILQEAVPVKRGD --threshold 0.5
 ```
