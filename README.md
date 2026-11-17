@@ -19,6 +19,34 @@ conda env create -f GTpMHC.yml
 
 ## Local weights and model settings
 
+```bash
+mkdir -p weights
+
+# GTpMHC class I: release asset model_I.pth -> configured local filename
+curl -fL --retry 3 \
+  -o weights/model_I.pth \
+  https://github.com/lvc5421/GTpMHC/releases/download/v1.0.0/model_I.pth
+
+# GTpMHC class II (HLA-DR): release asset model_II.pth -> configured local filename
+curl -fL --retry 3 \
+  -o weights/model_II.pth \
+  https://github.com/lvc5421/GTpMHC/releases/download/v1.0.0/model_II.pth
+
+# ESM-2 sequence model
+curl -fL --retry 3 \
+  -o weights/esm2_t33_650M_UR50D.pt \
+  https://dl.fbaipublicfiles.com/fair-esm/models/esm2_t33_650M_UR50D.pt
+
+# ESM-2 contact prediction head
+curl -fL --retry 3 \
+  -o weights/esm2_t33_650M_UR50D-contact-regression.pt \
+  https://dl.fbaipublicfiles.com/fair-esm/regression/esm2_t33_650M_UR50D-contact-regression.pt
+```
+
+The `-o` options save the release assets under the filenames already used by the default `config.json`; no checkpoint-path edits are needed for this download layout. If you use only class I or only class II, skip the other GTpMHC checkpoint command. Both ESM files are required for either class.
+
+After downloading, the directory should contain:
+
 Create a `weights` directory and place these trusted local artifacts in it:
 
 ```text
