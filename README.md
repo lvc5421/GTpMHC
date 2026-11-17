@@ -9,7 +9,7 @@ Here, we present GTpMHC, a graph–Transformer framework trained and evaluated s
 
 <img width="8000" height="4500" alt="pmhc0911" src="https://github.com/user-attachments/assets/52d68a7c-5fdb-4dae-8127-bb06ff74c94e" />
 
-
+Figure. 1 The framework of GTpMHC. (A) Feature Extraction and Graph Construction, (B) Interaction Modeling and Prediction, (C) Downstream Experiments
 
 ## Install
 
