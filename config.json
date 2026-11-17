@@ -8,7 +8,7 @@
   "max_cached_sequences": 256,
   "models": {
     "I": {
-      "checkpoint": "weights/gtpmhc_i.pth",
+      "checkpoint": "weights/model_I.pth",
       "kwargs": {
         "hidden_channels": 128,
         "K": [5, 10],
@@ -19,12 +19,12 @@
       }
     },
     "II": {
-      "checkpoint": "weights/gtpmhc_ii.pth",
+      "checkpoint": "weights/model_II.pth",
       "kwargs": {
         "hidden_channels": 128,
         "K": [5, 10],
         "heads": 4,
-        "max_pep_len": 25,
+        "max_pep_len": 21,
         "transformer_layers": 1,
         "max_hla_position": 256
       }
