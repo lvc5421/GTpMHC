@@ -35,6 +35,37 @@ def validate_threshold(value):
     return float(value)
 
 
+def parse_hla_dr_fasta(text, max_protein_length=2000):
+    """Read one DRA and one DRB1 record, identified by header rather than order."""
+    if not isinstance(text, str) or len(text) > max_protein_length * 4 + 2000:
+        raise ValueError("HLA-DR 双链 FASTA 缺失或输入过长。")
+    records = {}
+    chain = None
+    for line in text.lstrip("\ufeff").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith(">"):
+            header = line[1:].strip().split()
+            chain = header[0].upper() if header else ""
+            if chain not in ("DRA", "DRB1"):
+                raise ValueError("II 类 FASTA 的记录名必须为 >DRA 和 >DRB1；可在名称后添加空格和描述。")
+            if chain in records:
+                raise ValueError("II 类 FASTA 中存在重复记录：" + chain)
+            records[chain] = []
+        elif chain is None:
+            raise ValueError("FASTA 序列前需要 >DRA 或 >DRB1 记录名。")
+        else:
+            records[chain].append(line)
+    if set(records) != {"DRA", "DRB1"}:
+        raise ValueError("II 类 FASTA 必须同时包含一条 >DRA 和一条 >DRB1 记录。")
+    sequences = {name: normalize_sequence("\n".join(lines), name) for name, lines in records.items()}
+    for name, sequence in sequences.items():
+        if not 100 <= len(sequence) <= max_protein_length:
+            raise ValueError("{} 长度必须为 100 至 {}。".format(name, max_protein_length))
+    return {"protein": sequences["DRB1"], "dra_sequence": sequences["DRA"]}
+
+
 def normalize_request(payload, max_pep_len, mhc_class, max_protein_length=2000):
     if not isinstance(payload, dict):
         raise ValueError("请求必须是 JSON 对象。")
@@ -42,6 +73,13 @@ def normalize_request(payload, max_pep_len, mhc_class, max_protein_length=2000):
                "pseudo_sequence", "dra_sequence", "dra_sequence_offset"}
     if set(payload) - allowed:
         raise ValueError("不支持的字段：" + ", ".join(sorted(set(payload) - allowed)))
+    if mhc_class == "II" and isinstance(payload.get("protein"), str):
+        protein = payload["protein"]
+        header_count = sum(line.lstrip().startswith(">") for line in protein.lstrip("\ufeff").splitlines())
+        if header_count > 1 or (header_count and "dra_sequence" not in payload):
+            if "dra_sequence" in payload:
+                raise ValueError("双链 FASTA 已包含 DRA，请勿再提供 dra_sequence 或 --dra-* 参数。")
+            payload = {**payload, **parse_hla_dr_fasta(protein, max_protein_length)}
     result = {"threshold": validate_threshold(payload.get("threshold", 0.5))}
     for field in ("protein", "peptide"):
         value = payload.get(field)
@@ -67,7 +105,7 @@ def normalize_request(payload, max_pep_len, mhc_class, max_protein_length=2000):
     if mhc_class == "II":
         dra = payload.get("dra_sequence")
         if not isinstance(dra, str) or len(dra) > max_protein_length * 2 + 1000:
-            raise ValueError("II 类 HLA-DR 需要完整 DRA 序列。")
+            raise ValueError("II 类需要包含 >DRA 和 >DRB1 的双链 FASTA，或单独提供完整 dra_sequence。")
         result["dra_sequence"] = normalize_sequence(dra, "DRA")
         if not 100 <= len(result["dra_sequence"]) <= max_protein_length:
             raise ValueError("DRA 长度不在允许范围内。")
@@ -270,17 +308,22 @@ def make_handler(engine, index_path=None):
             else:
                 self.send_payload(404, {"detail": "未找到接口或页面。"})
 
+        def discard_small_body(self):
+            # Unread sent bytes can reset a Windows socket and hide the error response.
+            try:
+                size = int(self.headers.get("Content-Length", "0"))
+                if 0 < size <= MAX_BODY_BYTES:
+                    self.rfile.read(size)
+            except ValueError:
+                pass
+
         def do_POST(self):
             if urlsplit(self.path).path != "/api/predict":
-                try:
-                    size = int(self.headers.get("Content-Length", "0"))
-                    if 0 < size <= MAX_BODY_BYTES:
-                        self.rfile.read(size)
-                except ValueError:
-                    pass
+                self.discard_small_body()
                 self.send_payload(404, {"detail": "未找到接口。"})
                 return
             if self.headers.get_content_type() != "application/json":
+                self.discard_small_body()
                 self.send_payload(415, {"detail": "请使用 application/json。"})
                 return
             try:
@@ -327,11 +370,12 @@ def main(argv=None):
     serve.add_argument("--port", type=int, default=8000)
     predict = commands.choices["predict"]
     protein = predict.add_mutually_exclusive_group(required=True)
-    protein.add_argument("--protein", help="完整 HLA-I 或 DRB1 序列。")
-    protein.add_argument("--protein-fasta", type=Path)
+    protein.add_argument("--protein", help="完整 HLA-I 序列，或包含 >DRA 和 >DRB1 的 II 类双链 FASTA 文本。")
+    protein.add_argument("--protein-fasta", type=Path,
+                         help="I 类：单链 FASTA；II 类：同一文件包含 >DRA 和 >DRB1 两条记录。")
     dra = predict.add_mutually_exclusive_group()
-    dra.add_argument("--dra-sequence")
-    dra.add_argument("--dra-fasta", type=Path)
+    dra.add_argument("--dra-sequence", help="兼容旧双字段输入；使用双链 FASTA 时无需填写。")
+    dra.add_argument("--dra-fasta", type=Path, help="兼容旧双文件输入；使用双链 FASTA 时无需填写。")
     predict.add_argument("--peptide", required=True)
     predict.add_argument("--threshold", type=float)
     predict.add_argument("--sequence-offset", type=int)
@@ -354,6 +398,9 @@ def main(argv=None):
                     payload[key] = getattr(args, key)
             if args.dra_sequence is not None or args.dra_fasta is not None:
                 payload["dra_sequence"] = args.dra_fasta.read_text(encoding="utf-8-sig") if args.dra_fasta else args.dra_sequence
+            # Fail on malformed input before loading large ESM/model checkpoints.
+            normalize_request(payload, engine.max_pep_len, args.mhc_class,
+                              engine.settings.get("max_protein_length", 2000))
             with redirect_stdout(sys.stderr):
                 engine.load()
                 result = engine.predict(payload)
