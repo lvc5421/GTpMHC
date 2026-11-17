@@ -14,6 +14,8 @@ Figure. 1 The framework of GTpMHC. (A) Feature Extraction and Graph Construction
 ## 1. Install
 
 ```bash
+git clone https://github.com/lvc5421/GTpMHC.git
+cd GTpMHC
 conda env create -f GTpMHC.yml
 ```
 
