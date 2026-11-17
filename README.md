@@ -53,11 +53,6 @@ curl -fL --retry 3 \
 python app.py predict --mhc-class I \
   --protein-fasta examples/MHC_I.fasta \
   --peptide AAADIVNFL --threshold 0.5
-
-```bash
-python app.py predict --mhc-class I \
-  --protein-fasta examples/MHC_I.fasta \
-  --peptide AAADIVNFL --threshold 0.5
 ```
 
 **MHC Class II** (requires both $\alpha$ and $\beta$ chain sequences in the FASTA file, along with a peptide):
