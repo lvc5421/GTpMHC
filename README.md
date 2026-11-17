@@ -4,7 +4,7 @@ Peptide binding to major histocompatibility complex (MHC) molecules is a prerequ
 
 Here, we present GTpMHC, a graph–Transformer framework trained and evaluated separately on MHC class I and class II datasets. GTpMHC extracts contextualized residue representations at pseudo-sequence positions from protein language model encodings of full MHC sequences. Transformer encoders incorporate peptide–MHC sequence context, and graph clustering organizes MHC residues into groups for interaction modeling with peptides. The resulting residue representations are combined through joint self-attention to predict binding.
 
-
+ The GTpMHC online prediction webserver and experimental datasets are available at http://bliulab.net/GTpMHC/document
 
 ## Files
 
