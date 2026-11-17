@@ -6,7 +6,8 @@ Here, we present GTpMHC, a graph–Transformer framework trained and evaluated s
 
  The GTpMHC online prediction webserver and experimental datasets are available at http://bliulab.net/GTpMHC/document
 
-<img width="1920" height="1119" alt="image" src="https://github.com/user-attachments/assets/ddc4e25c-f70b-416f-bd03-87cb595a22dd" />
+
+<img width="8000" height="4500" alt="pmhc0911" src="https://github.com/user-attachments/assets/52d68a7c-5fdb-4dae-8127-bb06ff74c94e" />
 
 
 
