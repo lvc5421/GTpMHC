@@ -43,6 +43,7 @@ curl -fL --retry 3 \
 curl -fL --retry 3 \
   -o weights/esm2_t33_650M_UR50D-contact-regression.pt \
   https://dl.fbaipublicfiles.com/fair-esm/regression/esm2_t33_650M_UR50D-contact-regression.pt
+```
 
 ### 3. Usage
 
