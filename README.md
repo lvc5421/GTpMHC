@@ -11,13 +11,15 @@ Here, we present GTpMHC, a graph–Transformer framework trained and evaluated s
 
 Figure. 1 The framework of GTpMHC. (A) Feature Extraction and Graph Construction, (B) Interaction Modeling and Prediction, (C) Downstream Experiments
 
-## Install
+## 1. Install
 
 ```bash
 conda env create -f GTpMHC.yml
 ```
 
-## Local weights and model settings
+### 2. Download Pre-trained Models
+
+Create a `weights` directory and download the pre-trained GTpMHC checkpoints along with the ESM-2 backbone weights:
 
 ```bash
 mkdir -p weights
@@ -25,23 +27,22 @@ mkdir -p weights
 # GTpMHC class I
 curl -fL --retry 3 \
   -o weights/model_I.pth \
-  https://github.com/lvc5421/GTpMHC/releases/download/v1.0.0/model_I.pth
+  [https://github.com/lvc5421/GTpMHC/releases/download/v1.0.0/model_I.pth](https://github.com/lvc5421/GTpMHC/releases/download/v1.0.0/model_I.pth)
 
 # GTpMHC class II
 curl -fL --retry 3 \
   -o weights/model_II.pth \
-  https://github.com/lvc5421/GTpMHC/releases/download/v1.0.0/model_II.pth
+  [https://github.com/lvc5421/GTpMHC/releases/download/v1.0.0/model_II.pth](https://github.com/lvc5421/GTpMHC/releases/download/v1.0.0/model_II.pth)
 
 # ESM-2 sequence model
 curl -fL --retry 3 \
   -o weights/esm2_t33_650M_UR50D.pt \
-  https://dl.fbaipublicfiles.com/fair-esm/models/esm2_t33_650M_UR50D.pt
+  [https://dl.fbaipublicfiles.com/fair-esm/models/esm2_t33_650M_UR50D.pt](https://dl.fbaipublicfiles.com/fair-esm/models/esm2_t33_650M_UR50D.pt)
 
 # ESM-2 contact prediction head
 curl -fL --retry 3 \
   -o weights/esm2_t33_650M_UR50D-contact-regression.pt \
-  https://dl.fbaipublicfiles.com/fair-esm/regression/esm2_t33_650M_UR50D-contact-regression.pt
-```
+  [https://dl.fbaipublicfiles.com/fair-esm/regression/esm2_t33_650M_UR50D-contact-regression.pt](https://dl.fbaipublicfiles.com/fair-esm/regression/esm2_t33_650M_UR50D-contact-regression.pt)
 
 The `-o` options save the release assets under the filenames already used by the default `config.json`; no checkpoint-path edits are needed for this download layout. If you use only class I or only class II, skip the other GTpMHC checkpoint command. Both ESM files are required for either class.
 
