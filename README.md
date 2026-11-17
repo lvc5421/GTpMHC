@@ -22,12 +22,12 @@ conda env create -f GTpMHC.yml
 ```bash
 mkdir -p weights
 
-# GTpMHC class I: release asset model_I.pth -> configured local filename
+# GTpMHC class I
 curl -fL --retry 3 \
   -o weights/model_I.pth \
   https://github.com/lvc5421/GTpMHC/releases/download/v1.0.0/model_I.pth
 
-# GTpMHC class II (HLA-DR): release asset model_II.pth -> configured local filename
+# GTpMHC class II
 curl -fL --retry 3 \
   -o weights/model_II.pth \
   https://github.com/lvc5421/GTpMHC/releases/download/v1.0.0/model_II.pth
