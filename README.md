@@ -47,7 +47,12 @@ curl -fL --retry 3 \
 
 ### 3. Usage
 
-Class I, using a full protein sequence and peptide:
+**MHC Class I** (requires the full-length MHC heavy chain sequence and a peptide):
+
+```bash
+python app.py predict --mhc-class I \
+  --protein-fasta examples/MHC_I.fasta \
+  --peptide AAADIVNFL --threshold 0.5
 
 ```bash
 python app.py predict --mhc-class I \
@@ -55,7 +60,7 @@ python app.py predict --mhc-class I \
   --peptide AAADIVNFL --threshold 0.5
 ```
 
-Class II requires both chains:
+**MHC Class II** (requires both $\alpha$ and $\beta$ chain sequences in the FASTA file, along with a peptide):
 
 ```bash
 python app.py predict --mhc-class II \
