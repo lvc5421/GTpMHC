@@ -89,7 +89,7 @@ def _align(reference, full):
                  if previous[state][j] == best]
     # Repeated HLA domains can create many optima. They must not select silently.
     if len(endpoints) > 32:
-        raise ValueError("HLA 序列存在多个等价编号位置，请输入单条完整 HLA-I 链并检查重复结构域。")
+        raise ValueError("Multiple equivalent numbering positions found in the HLA sequence; please provide a single complete HLA-I chain and check for repeated domains.")
     mappings = []
     for endpoint, state in endpoints:
         i, j, mapping = n, endpoint, {}
@@ -118,18 +118,18 @@ def _alignment_stats(reference, full, mapping):
 
 def _map_chain(full, reference, positions, chain_name, min_identity,
                sequence_offset=None, expected_pseudo=None, max_hla_position=256):
-    full = _sequence(full, chain_name + "蛋白")
+    full = _sequence(full, chain_name + " protein")
     if len(full) < max(positions) - 1:
-        raise ValueError(f"请输入覆盖结合结构域的完整 {chain_name} 链；伪序列不能恢复完整上下文特征。")
+        raise ValueError(f"Please provide a complete {chain_name} chain covering the binding domain; a pseudo-sequence cannot recover full context features.")
     if max_hla_position < max(positions):
-        raise ValueError("模型成熟链位置容量小于当前位点定义。")
+        raise ValueError("Model mature-chain position capacity is smaller than the current site definition.")
     if sequence_offset is not None and (type(sequence_offset) is not int or not -1 <= sequence_offset <= 60):
-        raise ValueError("sequence_offset 必须为 -1 至 60 的整数。")
+        raise ValueError("sequence_offset must be an integer between -1 and 60.")
     expected = None
     if expected_pseudo is not None:
-        expected = _sequence(expected_pseudo, "预期伪序列")
+        expected = _sequence(expected_pseudo, "Expected pseudo-sequence")
         if len(expected) != len(positions):
-            raise ValueError(f"{chain_name}预期伪序列必须为{len(positions)}个残基。")
+            raise ValueError(f"Expected {chain_name} pseudo-sequence must be {len(positions)} residues long.")
     candidates = _align(reference, full)
     viable = []
     for mapping in candidates:
@@ -153,16 +153,16 @@ def _map_chain(full, reference, positions, chain_name, min_identity,
     # requested offset or expected sequence can bypass it.
     distinct = {entry[0]: entry for entry in viable}
     if len(distinct) > 1:
-        raise ValueError("HLA 编号存在多个同分匹配，请检查重复结构域；不自动任选一个映射。")
+        raise ValueError("Multiple tied matches found for HLA numbering; please check for repeated domains instead of selecting a mapping arbitrarily.")
     if not distinct:
-        raise ValueError(f"无法可靠识别 {chain_name} 成熟链位置：序列同源性不足、关键位点缺失或存在内部插入/缺失。请核对完整 {chain_name} 序列；不将任意蛋白当作 HLA。")
+        raise ValueError(f"Unable to reliably identify {chain_name} mature-chain positions: insufficient sequence identity, missing key residues, or internal insertions/deletions. Please verify the complete {chain_name} sequence; arbitrary proteins are not treated as HLA.")
     indices, offset, identity, coverage, pseudo = next(iter(distinct.values()))
     if not -1 <= offset <= 60:
-        raise ValueError("HLA成熟链起点超出支持的前导序列范围，请输入单条完整对应链。")
+        raise ValueError("HLA mature-chain start position is outside the supported leader-sequence range; please provide a single complete corresponding chain.")
     if sequence_offset is not None and offset != sequence_offset:
-        raise ValueError(f"输入指定的成熟链偏移 {sequence_offset} 与序列识别结果 {offset} 不一致。")
+        raise ValueError(f"Specified mature-chain offset {sequence_offset} does not match the detected offset {offset}.")
     if expected is not None and expected != pseudo:
-        raise ValueError("预期伪序列与输入完整 HLA 序列的切片不一致。")
+        raise ValueError("Expected pseudo-sequence does not match the slice from the input full HLA sequence.")
     return {"full_sequence": full, "pseudo_sequence": pseudo, "indices": list(indices),
             "pseudo_positions_mature": list(positions), "sequence_offset": offset,
             "alignment_identity": round(identity, 6), "alignment_coverage": round(coverage, 6),
@@ -177,15 +177,15 @@ def map_hla_ii_sequences(dra, drb1, dra_sequence_offset=None, sequence_offset=No
                          pseudo_sequence=None, max_hla_position=256):
     """Number DRA and DRB1 independently; reproduce data_init_II's 15+19 slots."""
     if max_hla_position < 33:
-        raise ValueError("II类模型位置容量必须覆盖0至33的34个输入槽位。")
+        raise ValueError("Class II model position capacity must cover all 34 input slots (0 to 33).")
     # Mature positions are metadata in the II preprocessing; the model receives
     # concatenated node_pos=0..33, not a merged mature-position embedding.
     mapping_limit = max(max_hla_position, max(DRB1_PSEUDO_POS_MATURE))
     expected_alpha = expected_beta = None
     if pseudo_sequence is not None:
-        expected = _sequence(pseudo_sequence, "HLA-DR预期伪序列")
+        expected = _sequence(pseudo_sequence, "Expected HLA-DR pseudo-sequence")
         if len(expected) != 34:
-            raise ValueError("HLA-DR预期伪序列必须为15位DRA加19位DRB1，共34位。")
+            raise ValueError("Expected HLA-DR pseudo-sequence must consist of 15 DRA residues plus 19 DRB1 residues (34 residues total).")
         expected_alpha, expected_beta = expected[:15], expected[15:]
     references = load_class_ii_reference()
     alpha = _map_chain(dra, references["dra"], DRA_PSEUDO_POS_MATURE, "DRA", 0.90,
